@@ -1,2 +1,2 @@
-# EVT_rosbypalooza
-Project on EVT with Plasim data - focus on heatwaves and cold spells - Rosbypalooza 2024
+# EVT_rossbypalooza
+Project on EVT with Plasim data - focus on heatwaves and cold spells - Rossbypalooza 2024
