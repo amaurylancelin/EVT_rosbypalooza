@@ -1,7 +1,7 @@
 #PBS -S /bin/bash
 #PBS -A URIC0009
 #PBS -q main 
-#PBS -l select=2:ncpus=24:mpiprocs=12:ompthreads=1
+#PBS -l select=2:ncpus=36:mpiprocs=12:ompthreads=1
 #PBS -l walltime=3:00:00
 #PBS -N compute_A
 #PBS -o job-logs/myjob_compute_A.log
