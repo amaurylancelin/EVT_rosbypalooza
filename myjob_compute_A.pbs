@@ -1,0 +1,14 @@
+#PBS -S /bin/bash
+#PBS -A URIC0009
+#PBS -q main 
+#PBS -l select=2:ncpus=24:mpiprocs=12:ompthreads=1
+#PBS -l walltime=3:00:00
+#PBS -N compute_A
+#PBS -o job-logs/myjob_compute_A.log
+#PBS -e job-logs/myjob_compute_A.err
+#PBS -m abe
+#PBS -M lancelin.amaury@lmd.ipsl.fr
+
+
+cd "/glade/work/alancelin/EVT_rossbypalooza/"
+python3 compute_A.py
