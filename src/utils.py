@@ -17,7 +17,7 @@ import sys
 import subprocess
 
 
-def compute_A(ds, lat, lon, spatial_window_size, temporal_window_size, reduce='max'):
+def compute_A(ds, lat, lon, spatial_window_size, reduce='max'):
     # for longitudes take the value modulo 360
     if lon < 0:
         lon = lon % 360
@@ -38,5 +38,5 @@ def compute_A(ds, lat, lon, spatial_window_size, temporal_window_size, reduce='m
         pass
     else:
         raise ValueError("reduce must be either 'mean', 'max', 'min', or 'None'")
-    A = A.tas.mean(dim=['lat', 'lon']).rolling(time=temporal_window_size*4).mean().dropna('time')
+    A = A.tas.mean(dim=['lat', 'lon'])# check window_size *4 or not #.rolling(time=temporal_window_size)
     return A
