@@ -3,14 +3,17 @@
 #PBS -N compute_A
 #PBS -A URIC0009
 #PBS -q main 
-#PBS -l select=1:ncpus=1:mpiprocs=1:ompthreads=1
+#PBS -l select=1:ncpus=48:mpiprocs=1:ompthreads=1:mem=115GB
+#PBS -l select=1:ncpus=1
 #PBS -l walltime=03:00:00
 #PBS -j oe 
+#PBS -o logs/compute_A_${PBS_JOBID}.out
+#PBS -e logs/compute_A_${PBS_JOBID}.err
 #PBS -m abe
 
-
-source /glade/u/home/kjakhar/.bashrc
-conda activate evt
+# source /glade/u/home/kjakhar/.bashrc
+module load conda
+conda activate npl
 # python -u -m test.py
 
 python3 -u -m compute_A_train.py ${var} ${sim_number} ${reduce} ${lat} ${lon}

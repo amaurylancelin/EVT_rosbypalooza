@@ -1,8 +1,8 @@
 #!/bin/bash
 
 var=tas
-lat=46
-lon=6
+lat=48
+lon=2
 reduce=max
 
 # Chicago - lat = 41, lon = -88
@@ -12,7 +12,7 @@ reduce=max
 # Saudi - lat=25, lon=47
 # Europe - lat=48, lon=2
 
-for sim in 0 1 2
+for sim in 0
 # for sim in 0 
 do
     qsub -v var=$var,sim_number=$sim,reduce=$reduce,lat=$lat,lon=$lon myjob_compute_A.pbs

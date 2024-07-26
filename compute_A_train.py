@@ -2,13 +2,13 @@ import os
 import sys
 from pathlib import Path
 import xarray as xr
-import pandas as pd
+# import pandas as pd
 
 from src.utils import compute_A
 
 # # Combine all files in path 
 # # select var 
-# var = 'tas'
+# var = 'tas'cond
 # sim_number = 0
 
 # # select lat, lon and 
@@ -21,7 +21,7 @@ var = str(sys.argv[1]) # tas
 sim_number = int(sys.argv[2]) # simulation number
 reduce = str(sys.argv[3]) # max
 lat = float(sys.argv[4]) # latitude
-lon = float(sys.argv[5]) # longitude
+lon = float(sys.argv[5]) % 360# longitude
 
 print(var, sim_number, reduce, lat, lon)
 
@@ -41,6 +41,9 @@ files = sorted(files, key=lambda x: int(x.split('_')[0]))
 # # combine all files using compute_A as a preprocessing function 
 A = xr.open_mfdataset([path+file for file in files], preprocess=lambda ds: compute_A(ds, var, lat, lon, spatial_window_size, reduce), combine='nested',
                        concat_dim='time', parallel=True, decode_times=True, use_cftime=True)
+# A = xr.open_mfdataset([path+file for file in files], preprocess=lambda ds: compute_A(ds, var, lat, lon, spatial_window_size, reduce), combine='nested',
+                    #    concat_dim='time', parallel=True, decode_times=True, use_cftime=True, engine=h5netcdf)
+# h5netcdf
 
 A_df = A.to_dataframe()
 # save the dataframe
