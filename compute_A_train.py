@@ -30,7 +30,11 @@ spatial_window_size = 2 # region around the lat, lon
 # temporal_window_size = 7
 path = f"/glade/derecho/scratch/awikner/PLASIM/data/2000_year_sims_new/sim{sim_number}/{var}/"
 
-files = [f for f in os.listdir(path) if f.endswith('gaussian.nc')]
+if var == 'tas' or var=='pl':
+    files = [f for f in os.listdir(path) if f.endswith('gaussian.nc')]
+elif var == 'hus':
+    files = [f for f in os.listdir(path) if f.endswith('gaussian_postproc.nc')]
+
 # files = files[:]
 # Remove spin-off data: take file only if year >10
 files = [f for f in files if int(f.split('_')[0])>10]
@@ -40,9 +44,9 @@ files = sorted(files, key=lambda x: int(x.split('_')[0]))
 # disable the printing of the warning
 # # combine all files using compute_A as a preprocessing function 
 A = xr.open_mfdataset([path+file for file in files], preprocess=lambda ds: compute_A(ds, var, lat, lon, spatial_window_size, reduce), combine='nested',
-                       concat_dim='time', parallel=True, decode_times=True, use_cftime=True)
+                       chunks={'time':96}, concat_dim='time', parallel=True, decode_times=True, use_cftime=True)
 # A = xr.open_mfdataset([path+file for file in files], preprocess=lambda ds: compute_A(ds, var, lat, lon, spatial_window_size, reduce), combine='nested',
-                    #    concat_dim='time', parallel=True, decode_times=True, use_cftime=True, engine=h5netcdf)
+#                        concat_dim='time', parallel=True, decode_times=True, use_cftime=True, engine=h5netcdf)
 # h5netcdf
 
 A_df = A.to_dataframe()
