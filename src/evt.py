@@ -8,11 +8,15 @@ import os.path
 rng = np.random.default_rng()
 
 
-def fit_model(data, model_class):
-    """Get model fitted to data. Returns scipy.rv_continuous object"""
+def fit_model(data, model_class, bounds):
+    """Get model fitted to data. Returns scipy.rv_continuous object. 
+    Bounds should be a dictionary with keys 'c', 'loc', 'scale'"""
 
     ## First, estimate parameters
-    bounds = dict(c=[-1e1, 1e1], loc=[200, 400], scale=[1e-1, 1e1])
+    # bounds = dict(c=c if c is not None else [-1e1, 1e1],
+    #               loc=loc if loc is not None else [200, 400],
+    #               scale=scale if scale is not None else [1e-1, 1e1])
+    #
     params = scipy.stats.fit(dist=model_class, data=data, bounds=bounds).params
 
     ## instantiate random variable
@@ -37,7 +41,7 @@ def draw_sample(data, n=None):
     return rng.choice(data, size=n, replace=True)
 
 
-def load_return_period_bnds(data, model_class, save_fp, n_samples=1000, alpha=0.05):
+def load_return_period_bnds(data, model_class, save_fp, bounds, n_samples=1000, alpha=0.05):
     """load in or compute return period bounds"""
 
     if os.path.isfile(save_fp):
@@ -53,8 +57,7 @@ def load_return_period_bnds(data, model_class, save_fp, n_samples=1000, alpha=0.
 
         ## compute bounds
         lb, ub = compute_return_period_bnds(
-            data, model_class=model_class, n_samples=n_samples, alpha=alpha
-        )
+            data, model_class=model_class, n_samples=n_samples, alpha=alpha, bounds=bounds)
 
         ## save to file
         with open(save_fp, "wb") as file:
@@ -63,7 +66,7 @@ def load_return_period_bnds(data, model_class, save_fp, n_samples=1000, alpha=0.
     return lb, ub
 
 
-def compute_return_period_bnds(data, model_class, n_samples=1000, alpha=0.05):
+def compute_return_period_bnds(data, model_class, bounds, n_samples=1000, alpha=0.05):
     """get bounds for return period using bootstrap sampling"""
 
     ## empty list to hold result
@@ -73,7 +76,7 @@ def compute_return_period_bnds(data, model_class, n_samples=1000, alpha=0.05):
     for _ in tqdm.tqdm(range(n_samples)):
 
         ## fit model on bootstrapped sample
-        model = fit_model(draw_sample(data), model_class=model_class)
+        model = fit_model(draw_sample(data), model_class=model_class, bounds=bounds)
 
         ## compute return period
         return_levels_samples.append(get_return_levels(model)[0])
@@ -90,7 +93,8 @@ def get_empirical_pdf(data, bin_edges=None):
 
     ## Set bin_edges if unspecified
     if bin_edges is None:
-        bin_edges = np.linspace(np.floor(data.min()), np.ceil(data.max()), 20)
+        print(f"Number of bins not specified. Using square root rule. {np.sqrt(len(data)).astype(int)}")
+        bin_edges = np.linspace(np.floor(data.min()), np.ceil(data.max()), np.sqrt(len(data)).astype(int))
 
     ## make histogram
     counts, _ = np.histogram(data, bins=bin_edges)
