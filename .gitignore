@@ -1,6 +1,8 @@
-# temporary results
+# custom
 data/*bounds.pkl
 data/PNW_ERA5
+data/plasim
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
