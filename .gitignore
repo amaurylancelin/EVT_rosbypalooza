@@ -1,5 +1,6 @@
 # temporary results
 data/*bounds.pkl
+data/PNW_ERA5
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
