@@ -4,7 +4,7 @@ import pickle
 from tqdm import tqdm
 import os.path
 
-## initialize random number generator
+# ## initialize random number generator
 rng = np.random.default_rng()
 
 
@@ -52,7 +52,6 @@ def load_return_period_bnds(data, model_class, save_fp, bounds, n_samples=1000, 
         lb = bounds["lb"]
         ub = bounds["ub"]
     else:
-
         ## compute bounds
         if not MC: 
             lb, ub = compute_return_period_bnds(
@@ -70,6 +69,8 @@ def load_return_period_bnds(data, model_class, save_fp, bounds, n_samples=1000, 
         return mean, median, lb, ub
     else: 
         return lb, ub
+    
+
 
 
 def compute_return_period_bnds(data, model_class, bounds, n_samples=1000, alpha=0.05):
@@ -82,6 +83,8 @@ def compute_return_period_bnds(data, model_class, bounds, n_samples=1000, alpha=
     for _ in tqdm(range(n_samples)):
 
         ## fit model on bootstrapped sample
+        if model_class == scipy.stats.norm:
+            model = scipy.stats.norm(loc=data.mean(), scale=data.std())
         model = fit_model(draw_sample(data), model_class=model_class, bounds=bounds)
 
         ## compute return period
@@ -145,3 +148,34 @@ def get_empirical_return_period(X):
     return tr_empirical, Xr_empirical
 
 
+def compute_MC_return_value(full_data, model_class, bounds, n_train=80, n_mc=10, return_periods=100):
+    """Compute the return value at a target return period using Monte Carlo simulation
+    """
+    ## empty list to hold result
+    return_levels_samples = []
+    for i in tqdm(range(n_mc)):
+        # split data into training and testing
+        train_data = draw_sample(full_data, n_train)
+        # fit model on
+        if model_class == scipy.stats.norm:
+            model = scipy.stats.norm(loc=train_data.mean(), scale=train_data.std())
+        else:
+            model = fit_model(train_data, model_class=model_class, bounds=bounds)
+        # compute return period
+        return_levels_samples.append(get_return_levels(model, return_periods=return_periods)[0])
+
+    ## convert to array and compute bounds
+    return_levels_samples = np.stack(return_levels_samples, axis=0)
+    return return_levels_samples
+
+def get_target_return_value(X_test, target_return_period):
+    """Interpolate the return value at a target return period with the 
+    empirical return periods of the whole ground truth"""
+    
+    t_test_r_empirical, X_test_r_empirical = get_empirical_return_period(X_test)
+
+    index_target_rv = np.argmin(np.abs(t_test_r_empirical - target_return_period))
+    if t_test_r_empirical[index_target_rv] < target_return_period:
+        index_target_rv += 1
+    target_rv = np.mean(X_test_r_empirical[index_target_rv-1:index_target_rv+1])
+    return target_rv, index_target_rv
