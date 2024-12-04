@@ -3,6 +3,7 @@ data/*bounds.pkl
 data/PNW_ERA5
 data/plasim
 .DS_Store
+*.pptx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
