@@ -1,5 +1,6 @@
 # temporary results
 data/*bounds.pkl
+interactive.sh
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
