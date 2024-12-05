@@ -5,6 +5,8 @@ data/PNW_ERA5
 data/plasim
 .DS_Store
 *.pptx
+data/whoi_data*.nc
+jupyter.sh
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
